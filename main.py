@@ -1,6 +1,12 @@
-
-
 import random
+
+#This method replace the @new_character, in @original_string, at position @pos
+#string[i] = "a" does not work in python
+def get_replace_string_character_at(pos, new_character, original_string):
+    string_list = list(original_string)
+    string_list[pos] = new_character
+    
+    return ''.join(string_list)
 
 def generate_initial_number():
     return str(random.randint(1000,9999))
@@ -8,39 +14,48 @@ def generate_initial_number():
 def generate_new_digit():
     return str(random.randint(0,9))
 
+#Check if a digit is not found repeating in a number
+#Example: is_digit_repeated(2, 2236) return True
+#Example: is_digit_repeated(6, 2236) return False
 def is_digit_repeated(digit, number):
     return number.count(digit) > 1
 
-#This method should return a digit that is unique in parameter number
-#Example: 4442
-def get_unique_digit(i, number):
-    print(type(i))
-    if not is_digit_repeated(number[i], number):
-        return number[i]
-    
-    new_digit = number[i]
+#Check if the first digit is not zero
+def is_digit_valid(pos, new_digit):
+    if int(pos) == 0 and int(new_digit) == 0:
+        return False
+    return True
 
-    while(is_digit_repeated(new_digit, number)):
-        new_digit = generate_new_digit();
+#This method should return a digit that is unique in the parameter @number
+def get_unique_digit(i, number):
+    copy_of_number = number
+
+    if not is_digit_repeated(copy_of_number[i], copy_of_number) and is_digit_valid(i, copy_of_number[i]):
+        return copy_of_number[i]
+    
+    new_digit = copy_of_number[i]
+
+    while is_digit_repeated(new_digit, copy_of_number) or not is_digit_valid(i, new_digit):
+        new_digit = generate_new_digit()
+
+        copy_of_number = get_replace_string_character_at(i, new_digit, copy_of_number)
     
     return new_digit
     
 
 #This method will return the final number, with each digit unique. 
-#initial_generated_number ex: 4421
-#final_generated_number ex: 9821
 def get_final_generated_number(initial_generated_number):
     final_generated_number = initial_generated_number
+    
     for i in range(len(final_generated_number)):
-        final_generated_number[i] = get_unique_digit(i, final_generated_number)
-        
+        final_generated_number = get_replace_string_character_at(i, get_unique_digit(i, final_generated_number), final_generated_number)
+         
     return final_generated_number
     
 
 def generate_different_digit_number():
     initial_generated_number = generate_initial_number()
-    
+
     return get_final_generated_number(initial_generated_number)
     
     
-print(generate_different_digit_number())
